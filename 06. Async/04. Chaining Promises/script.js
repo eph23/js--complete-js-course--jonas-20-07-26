@@ -24,10 +24,24 @@ const renderCountry = function (data, className = '') {
 };
 
 const getCountryData = function (country) {
- fetch(`https://countries.dev/name/${country}`)
-    .then(response => response.json()).then(data => renderCountry(data[0])
-    )
+  fetch(`https://countries.dev/name/${country}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      renderCountry(data[0]);
+      const neighbours = data[0].borders;
+
+      if (!neighbours) {
+        return;
+      }
+
+      neighbours.map(neighbour => {
+        fetch(`https://countries.dev/alpha/${neighbour}`)
+          .then(response => response.json())
+          .then(data => renderCountry(data, 'neighbour'));
+      });
+    });
 };
 
-getCountryData('bangladesh');
 getCountryData('canada');
+getCountryData('bangladesh');
